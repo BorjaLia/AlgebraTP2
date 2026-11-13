@@ -289,7 +289,10 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Intersect<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return IntersectIterator(source1, source2, null);
     }
 
     /// <summary>
@@ -302,7 +305,23 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Intersect<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return IntersectIterator(source1, source2, comparer);
+    }
+
+    private static IEnumerable<TSource> IntersectIterator<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
+    {
+        HashSet<TSource> set2 = new HashSet<TSource>(source2, comparer);
+
+        foreach (TSource element in source1)
+        {
+            if (set2.Remove(element))
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>

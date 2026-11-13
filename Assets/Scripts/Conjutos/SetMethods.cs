@@ -437,7 +437,10 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Union<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return UnionIterator(source1, source2, null);
     }
 
     /// <summary>
@@ -450,7 +453,31 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Union<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return UnionIterator(source1, source2, comparer);
+    }
+
+    private static IEnumerable<TSource> UnionIterator<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
+    {
+        HashSet<TSource> seenElements = new HashSet<TSource>(comparer);
+
+        foreach (TSource element in source1)
+        {
+            if (seenElements.Add(element))
+            {
+                yield return element;
+            }
+        }
+
+        foreach (TSource element in source2)
+        {
+            if (seenElements.Add(element))
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>

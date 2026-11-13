@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputSystem_Actions",
     "maps": [
         {
@@ -986,6 +987,34 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Sets",
+            "id": "5c29f81e-5098-4a9b-8e71-eef734a6f60e",
+            "actions": [
+                {
+                    "name": "RunTests",
+                    "type": "Button",
+                    "id": "bf702e4e-f269-4d8e-ad6b-fcd3375a28ce",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2203a7c8-cf02-42f7-a59e-8824d8cba086",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RunTests",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

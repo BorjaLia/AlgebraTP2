@@ -33,21 +33,14 @@ public class SetMethodsTester : MonoBehaviour
 
     void RunAllTests()
     {
-        Debug.ClearDeveloperConsole();
-
         List<int> setA = new List<int>();
         List<int> setB = new List<int>();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < UnityEngine.Random.Range(5, 15); i++)
         {
             setA.Add(UnityEngine.Random.Range(5, 20));
             setB.Add(UnityEngine.Random.Range(10, 25));
         }
-
-        //setA.Add(setA[0]); // Force a duplicate so Distinct has something to filter[cite: 1]
-        //setA.Add(2);       // Force an even number for First/Last tests[cite: 1]
-        //setA.Add(999);     // Force a unique number for the Single test[cite: 1]
-        //setA.Insert(0, 1); // Insert a low number at the start for the SkipWhile test[cite: 1]
 
         Debug.Log($"--- INITIALIZED SETS ---");
         Debug.Log($"Set A: [{string.Join(", ", setA)}]");
@@ -59,20 +52,43 @@ public class SetMethodsTester : MonoBehaviour
         Debug.Log($"All (> 0): {SetMethods.All(setA, x => x > 0)}");
         Debug.Log($"Any (> 50): {SetMethods.Any(setA, x => x > 50)}");
 
-        int searchItem = setA[1];
+        int searchItem = setA[0];
         Debug.Log($"Contains {searchItem} (Default): {SetMethods.Contains(setA, searchItem)}");
         Debug.Log($"Contains {searchItem + 5} (Custom Modulo 5): {SetMethods.Contains(setA, searchItem + 5, customComparer)}");
 
         Debug.Log($"Distinct (Default): [{string.Join(", ", SetMethods.Distinct(setA))}]");
         Debug.Log($"Distinct (Custom Modulo 5): [{string.Join(", ", SetMethods.Distinct(setA, customComparer))}]");
 
-        Debug.Log($"ElementAt index 3: {SetMethods.ElementAt(setA, 3)}");
+        try
+        {
+            Debug.Log($"ElementAt index 3: {SetMethods.ElementAt(setA, 3)}");
+            Debug.Log($"ElementAt index 10 (Should Fail): {SetMethods.ElementAt(setA, 10)}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"ElementAt Failed (Expected): {e.Message}");
+        }
 
         Debug.Log($"Except Set B (Default): [{string.Join(", ", SetMethods.Except(setA, setB))}]");
         Debug.Log($"Except Set B (Custom Modulo 5): [{string.Join(", ", SetMethods.Except(setA, setB, customComparer))}]");
 
-        Debug.Log($"First even number: {SetMethods.First(setA, x => x % 2 == 0)}");
-        Debug.Log($"Last even number: {SetMethods.Last(setA, x => x % 2 == 0)}");
+        try
+        {
+            Debug.Log($"First even number: {SetMethods.First(setA, x => x % 2 == 0)}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"First Failed (Expected if no even numbers): {e.Message}");
+        }
+
+        try
+        {
+            Debug.Log($"Last even number: {SetMethods.Last(setA, x => x % 2 == 0)}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Last Failed (Expected if no even numbers): {e.Message}");
+        }
 
         Debug.Log($"Intersect Set B (Default): [{string.Join(", ", SetMethods.Intersect(setA, setB))}]");
         Debug.Log($"Intersect Set B (Custom Modulo 5): [{string.Join(", ", SetMethods.Intersect(setA, setB, customComparer))}]");
@@ -85,14 +101,14 @@ public class SetMethodsTester : MonoBehaviour
 
         try
         {
-            Debug.Log($"Single (x == 999): {SetMethods.Single(setA, x => x == 999)}");
+            Debug.Log($"Single (> 10): {SetMethods.Single(setA, x => x > 10)}");
         }
         catch (Exception e)
         {
-            Debug.LogError($"Single Failed: {e.Message}");
+            Debug.LogWarning($"Single Failed (Expected if 0 or >1 matches found): {e.Message}");
         }
 
-        Debug.Log($"SkipWhile (< 5): [{string.Join(", ", SetMethods.SkipWhile(setA, x => x < 5))}]");
+        Debug.Log($"SkipWhile (< 15): [{string.Join(", ", SetMethods.SkipWhile(setA, x => x < 15))}]");
 
         Debug.Log($"Union Set B (Default): [{string.Join(", ", SetMethods.Union(setA, setB))}]");
         Debug.Log($"Union Set B (Custom Modulo 5): [{string.Join(", ", SetMethods.Union(setA, setB, customComparer))}]");

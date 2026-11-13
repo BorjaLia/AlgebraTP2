@@ -405,7 +405,27 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> SkipWhile<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        return SkipWhileIterator(source, predicate);
+    }
+
+    private static IEnumerable<TSource> SkipWhileIterator<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
+    {
+        bool yielding = false;
+        foreach (TSource element in source)
+        {
+            if (!yielding && !predicate(element))
+            {
+                yielding = true;
+            }
+
+            if (yielding)
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>

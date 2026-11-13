@@ -12,7 +12,18 @@ public class SetMethods
     /// <returns></returns>
     public static bool All<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        foreach (TSource element in source)
+        {
+            if (!predicate(element))
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

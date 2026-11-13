@@ -357,7 +357,25 @@ public class SetMethods
     /// <returns></returns>
     public static bool SequenceEqual<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        comparer = comparer ?? EqualityComparer<TSource>.Default;
+
+        using (IEnumerator<TSource> e1 = source1.GetEnumerator())
+        using (IEnumerator<TSource> e2 = source2.GetEnumerator())
+        {
+            while (e1.MoveNext())
+            {
+
+                if (!e2.MoveNext() || !comparer.Equals(e1.Current, e2.Current))
+                {
+                    return false;
+                }
+            }
+
+            return !e2.MoveNext();
+        }
     }
 
     /// <summary>
@@ -489,6 +507,20 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Where<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        return WhereIterator(source, predicate);
+    }
+
+    private static IEnumerable<TSource> WhereIterator<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
+    {
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                yield return element;
+            }
+        }
     }
 }

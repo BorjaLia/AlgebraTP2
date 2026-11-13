@@ -333,7 +333,18 @@ public class SetMethods
     /// <returns></returns>
     public static int Count<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        int count = 0;
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     /// <summary>

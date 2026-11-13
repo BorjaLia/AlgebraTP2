@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using static Unity.VisualScripting.Member;
 
 public class SetMethods
 {
@@ -59,11 +61,11 @@ public class SetMethods
     public static bool Contains<TSource>(IEnumerable<TSource> source, TSource item)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
-        if (item == null) throw new ArgumentNullException(nameof(item));
 
+        EqualityComparer<TSource> comparer = EqualityComparer<TSource>.Default;
         foreach (TSource element in source)
         {
-            if (element.Equals(item))
+            if (comparer.Equals(element, item))
             {
                 return true;
             }
@@ -83,11 +85,11 @@ public class SetMethods
     public static bool Contains<TSource>(IEnumerable<TSource> source, TSource item, IEqualityComparer<TSource> comparer)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
-        if (item == null) throw new ArgumentNullException(nameof(item));
 
+        comparer = comparer ?? EqualityComparer<TSource>.Default;
         foreach (TSource element in source)
         {
-            if (comparer.Equals(element,item))
+            if (comparer.Equals(element, item))
             {
                 return true;
             }
@@ -104,7 +106,9 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Distinct<TSource>(IEnumerable<TSource> source)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        return DistinctIterator(source, null);
     }
 
     /// <summary>
@@ -116,7 +120,21 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Distinct<TSource>(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        return DistinctIterator(source, comparer);
+    }
+
+    private static IEnumerable<TSource> DistinctIterator<TSource>(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+    {
+        HashSet<TSource> seenElements = new HashSet<TSource>(comparer);
+        foreach (TSource element in source)
+        {
+            if (seenElements.Add(element))
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>
@@ -129,7 +147,12 @@ public class SetMethods
     public static TSource ElementAt<TSource>(IEnumerable<TSource> source, int index)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
+        if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
 
+        if (source is IList<TSource> list)
+        {
+            return list[index];
+        }
 
         int i = 0;
         foreach (TSource element in source)
@@ -141,7 +164,7 @@ public class SetMethods
             i++;
         }
 
-        return default(TSource);
+        throw new ArgumentOutOfRangeException(nameof(index));
     }
 
     /// <summary>
@@ -153,7 +176,10 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Except<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return ExceptIterator(source1, source2, null);
     }
 
     /// <summary>
@@ -166,7 +192,23 @@ public class SetMethods
     /// <returns></returns>
     public static IEnumerable<TSource> Except<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source1 == null) throw new ArgumentNullException(nameof(source1));
+        if (source2 == null) throw new ArgumentNullException(nameof(source2));
+
+        return ExceptIterator(source1, source2, comparer);
+    }
+
+    private static IEnumerable<TSource> ExceptIterator<TSource>(IEnumerable<TSource> source1, IEnumerable<TSource> source2, IEqualityComparer<TSource> comparer)
+    {
+        HashSet<TSource> excludedElements = new HashSet<TSource>(source2, comparer);
+
+        foreach (TSource element in source1)
+        {
+            if (excludedElements.Add(element))
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>
@@ -178,7 +220,18 @@ public class SetMethods
     /// <returns></returns>
     public static TSource First<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                return element;
+            }
+        }
+
+        throw new InvalidOperationException("Sequence contains no matching element");
     }
 
     /// <summary>
@@ -190,7 +243,41 @@ public class SetMethods
     /// <returns></returns>
     public static TSource Last<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        if (source is IList<TSource> list)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                TSource element = list[i];
+                if (predicate(element))
+                {
+                    return element;
+                }
+            }
+        }
+        else
+        {
+            bool found = false;
+            TSource lastMatch = default(TSource);
+
+            foreach (TSource element in source)
+            {
+                if (predicate(element))
+                {
+                    lastMatch = element;
+                    found = true;
+                }
+            }
+
+            if (found)
+            {
+                return lastMatch;
+            }
+        }
+
+        throw new InvalidOperationException("Sequence contains no matching element");
     }
 
     /// <summary>

@@ -82,7 +82,18 @@ public class SetMethods
     /// <returns></returns>
     public static bool Contains<TSource>(IEnumerable<TSource> source, TSource item, IEqualityComparer<TSource> comparer)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (item == null) throw new ArgumentNullException(nameof(item));
+
+        foreach (TSource element in source)
+        {
+            if (comparer.Equals(element,item))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

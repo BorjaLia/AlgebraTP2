@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static Unity.VisualScripting.Member;
 
 public class SetMethods
 {
@@ -25,7 +24,7 @@ public class SetMethods
             }
         }
 
-        return false;
+        return true;
     }
 
     /// <summary>

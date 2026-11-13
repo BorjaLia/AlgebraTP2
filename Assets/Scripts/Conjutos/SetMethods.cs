@@ -14,6 +14,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Determines whether any element of a sequence satisfies a condition.
     /// </summary>
@@ -23,8 +24,20 @@ public class SetMethods
     /// <returns></returns>
     public static bool Any<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate) 
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
+
     /// <summary>
     /// Determines whether a sequence contains a specified element by using the default equality comparer.
     /// </summary>
@@ -36,6 +49,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Determines whether a sequence contains a specified element by using a specified IEqualityComparer<T>.
     /// </summary>
@@ -48,6 +62,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns distinct elements from a sequence by using the default equality comparer to compare values.
     /// </summary>
@@ -58,6 +73,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns distinct elements from a sequence by using a specified IEqualityComparer<T> to compare values.
     /// </summary>
@@ -69,6 +85,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns the element at a specified index in a sequence.
     /// </summary>
@@ -80,6 +97,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set difference of two sequences by using the default equality comparer to compare values.
     /// </summary>
@@ -91,6 +109,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set difference of two sequences by using the specified IEqualityComparer<T> to compare values.
     /// </summary>
@@ -103,6 +122,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns the first element in a sequence that satisfies a specified condition.
     /// </summary>
@@ -114,6 +134,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns the last element of a sequence that satisfies a specified condition.
     /// </summary>
@@ -125,6 +146,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set intersection of two sequences by using the default equality comparer to compare values.
     /// </summary>
@@ -136,6 +158,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set intersection of two sequences by using the specified IEqualityComparer<T> to compare values.
     /// </summary>
@@ -148,6 +171,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns a number that represents how many elements in the specified sequence satisfy a condition.
     /// </summary>
@@ -159,6 +183,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Determines whether two sequences are equal by comparing their elements by using a specified IEqualityComparer<T>.
     /// </summary>
@@ -171,6 +196,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Returns the only element of a sequence that satisfies a specified condition, and throws an exception if more than one such element exists.
     /// </summary>
@@ -182,6 +208,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements.
     /// </summary>
@@ -193,6 +220,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set union of two sequences by using the default equality comparer.
     /// </summary>
@@ -204,6 +232,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Produces the set union of two sequences by using a specified IEqualityComparer<T>.
     /// </summary>
@@ -216,6 +245,7 @@ public class SetMethods
     {
         throw new NotImplementedException();
     }
+
     /// <summary>
     /// Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
     /// </summary>

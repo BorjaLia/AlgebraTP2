@@ -369,7 +369,31 @@ public class SetMethods
     /// <returns></returns>
     public static TSource Single<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        bool found = false;
+        TSource result = default(TSource);
+
+        foreach (TSource element in source)
+        {
+            if (predicate(element))
+            {
+                if (found)
+                {
+                    throw new InvalidOperationException("Sequence contains more than one matching element");
+                }
+                result = element;
+                found = true;
+            }
+        }
+
+        if (!found)
+        {
+            throw new InvalidOperationException("Sequence contains no matching element");
+        }
+
+        return result;
     }
 
     /// <summary>

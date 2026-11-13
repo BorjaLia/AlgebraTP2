@@ -128,7 +128,20 @@ public class SetMethods
     /// <returns></returns>
     public static TSource ElementAt<TSource>(IEnumerable<TSource> source, int index)
     {
-        throw new NotImplementedException();
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+
+        int i = 0;
+        foreach (TSource element in source)
+        {
+            if (i == index)
+            {
+                return element;
+            }
+            i++;
+        }
+
+        return default(TSource);
     }
 
     /// <summary>

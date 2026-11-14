@@ -21,7 +21,7 @@ namespace SpatialPartitioning
 
         private bool CheckAABBOverlap(AABB boundsA, AABB boundsB) { throw new NotImplementedException(); }
 
-        private void MapOverlappingQuadrants(Tree treeA, Tree treeB) { throw new NotImplementedException(); }
+        private void MapOverlappingQuadrants(UnityEngine.Tree treeA, UnityEngine.Tree treeB) { throw new NotImplementedException(); }
 
         private bool CheckNarrowPhaseTriangleCollision(List<ITreeElement> trianglesA, List<ITreeElement> trianglesB) { throw new NotImplementedException(); }
 

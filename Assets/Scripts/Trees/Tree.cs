@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SpatialPartitioning
 {
-    public class SpatialTree
+    public class Tree
     {
         public TreeNode RootNode { get; protected set; }
         public int MaxElementsPerNode { get; protected set; }
@@ -13,7 +13,7 @@ namespace SpatialPartitioning
         public AABB TreeBounds { get; protected set; }
         public bool IsQuadtree { get; protected set; }
 
-        public SpatialTree(int maxElementsPerNode, int maxDepth)
+        public Tree(int maxElementsPerNode, int maxDepth)
         {
             MaxElementsPerNode = maxElementsPerNode;
             MaxDepth = maxDepth;
@@ -44,7 +44,7 @@ namespace SpatialPartitioning
             return RootNode.Insert(element);
         }
 
-        public void GetOverlappingNodes(SpatialTree otherTree, ref List<TreeNode> overlappingNodesBuffer)
+        public void GetOverlappingNodes(Tree otherTree, ref List<TreeNode> overlappingNodesBuffer)
         {
             if (RootNode == null || otherTree?.RootNode == null) return;
 

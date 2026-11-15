@@ -119,6 +119,39 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &163783081
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 163783082}
+  m_Layer: 0
+  m_Name: Systems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &163783082
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163783081}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.84368, y: -0, z: 6.83913}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1486422868}
+  - {fileID: 966977165}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &568335957
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +244,97 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &966977163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 966977165}
+  - component: {fileID: 966977164}
+  - component: {fileID: 966977168}
+  - component: {fileID: 966977167}
+  - component: {fileID: 966977166}
+  m_Layer: 0
+  m_Name: TreeCollisionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &966977164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966977163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c09d8b83836944baf989a8f609c102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpatialPartitioning.TreeCollisionManager
+  worldSize: 10
+  maxObjectsPerNode: 4
+  maxWorldTreeDepth: 5
+  trackedObjects: []
+--- !u!4 &966977165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966977163}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -11.89764, y: 0, z: -4.89309}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 163783082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &966977166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966977163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84e85d224aad6454eaf38f5550e0f149, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpatialPartitioning.MeshTriangleTreeManager
+  maxElementsPerNode: 10
+  maxDepth: 5
+--- !u!33 &966977167
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966977163}
+  m_Mesh: {fileID: 0}
+--- !u!114 &966977168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966977163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5671d1a1647bc084b99460471ec94458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpatialPartitioning.SpatialTreeVisualizer
+  targetTreeManager: {fileID: 0}
+  targetCollisionManager: {fileID: 0}
+  boundsColor: {r: 0, g: 1, b: 0, a: 1}
+  overlappingQuadrantColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  collisionPointColor: {r: 1, g: 0, b: 0, a: 1}
+  drawLeafNodesOnly: 1
 --- !u!1 &1486422866
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,10 +364,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82a86dd76afd424f8730163ef2b083f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeSpawner
-  collisionManager: {fileID: 0}
-  maxElementsPerNode: 4
+  maxElementsPerNode: 2
   maxDepth: 8
-  objectPrefabs: []
+  objectPrefabs:
+  - {fileID: 3143428604090576650, guid: 469e67e0f88378d4680badbd39ee72de, type: 3}
   spawnCount: 17
   spawnRadius: 10
 --- !u!4 &1486422868
@@ -254,12 +378,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1486422866}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.94604, y: -0, z: 1.94604}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -11.89764, y: 0, z: -4.89309}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 163783082}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2022745773
 GameObject:
@@ -394,4 +518,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 568335960}
   - {fileID: 2022745775}
-  - {fileID: 1486422868}
+  - {fileID: 163783082}

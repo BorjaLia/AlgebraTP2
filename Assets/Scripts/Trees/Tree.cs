@@ -1,38 +1,29 @@
-using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace SpatialPartitioning
 {
     public class Tree
     {
-        public TreeNode RootNode { get; protected set; }
+        public AABB TreeBounds { get; protected set; }
         public int MaxElementsPerNode { get; protected set; }
         public int MaxDepth { get; protected set; }
-        public AABB TreeBounds { get; protected set; }
         public bool IsQuadtree { get; protected set; }
+        public TreeNode RootNode { get; protected set; }
 
-        public Tree(int maxElementsPerNode, int maxDepth)
+        public Tree(AABB bounds, int maxElements, int maxDepth)
         {
-            MaxElementsPerNode = maxElementsPerNode;
+            MaxElementsPerNode = maxElements;
             MaxDepth = maxDepth;
-        }
-
-        public void Initialize(AABB bounds)
-        {
             TreeBounds = bounds;
 
             IsQuadtree = (bounds.Extents.x == 0 || bounds.Extents.y == 0 || bounds.Extents.z == 0);
-
             RootNode = new TreeNode(bounds, 0, MaxElementsPerNode, MaxDepth);
         }
-
         public bool Insert(ITreeElement element)
         {
             if (RootNode == null)
             {
-                Debug.LogWarning("SpatialTree is not initialized. Call Initialize() first.");
                 return false;
             }
 
@@ -84,6 +75,26 @@ namespace SpatialPartitioning
                     }
                 }
             }
+        }
+        public void ClearElements()
+        {
+            if (RootNode != null) RootNode.ClearElementsRecursive();
+        }
+
+        public TreeNode GetLeafContaining(Vector3 position)
+        {
+            if (RootNode != null && RootNode.NodeBounds.Contains(position))
+            {
+                return RootNode.GetLeafContainingRecursive(position);
+            }
+            return null;
+        }
+
+        public List<TreeNode> GetActiveLeaves()
+        {
+            List<TreeNode> activeLeaves = new List<TreeNode>();
+            if (RootNode != null) RootNode.GetActiveLeavesRecursive(activeLeaves);
+            return activeLeaves;
         }
     }
 }

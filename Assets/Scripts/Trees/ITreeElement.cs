@@ -22,6 +22,13 @@ namespace SpatialPartitioning
                    (Mathf.Abs(Center.y - other.Center.y) <= (Extents.y + other.Extents.y)) &&
                    (Mathf.Abs(Center.z - other.Center.z) <= (Extents.z + other.Extents.z));
         }
+
+        public bool Contains(Vector3 point)
+        {
+            return (Mathf.Abs(Center.x - point.x) <= Extents.x) &&
+                   (Mathf.Abs(Center.y - point.y) <= Extents.y) &&
+                   (Mathf.Abs(Center.z - point.z) <= Extents.z);
+        }
     }
 
     public struct Triangle
@@ -39,9 +46,7 @@ namespace SpatialPartitioning
     public interface ITreeElement
     {
         AABB Bounds { get; }
-
         Vector3 Center { get; }
-
         Triangle[] Triangles { get; }
     }
 
@@ -50,5 +55,13 @@ namespace SpatialPartitioning
         public AABB Bounds { get; set; }
         public Vector3 Center { get; set; }
         public Triangle[] Triangles { get; set; }
+    }
+
+    public class ObjectElement : ITreeElement
+    {
+        public AABB Bounds { get; set; }
+        public Vector3 Center { get; set; }
+        public Triangle[] Triangles { get; set; }
+        public MeshTriangleTreeManager TreeManager { get; set; }
     }
 }

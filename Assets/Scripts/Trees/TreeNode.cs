@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -111,6 +110,56 @@ namespace SpatialPartitioning
                 foreach (var child in Children)
                 {
                     child.GetIntersectingNodes(searchBounds, ref resultsBuffer);
+                }
+            }
+        }
+
+        public void ClearElementsRecursive()
+        {
+            if (IsLeaf)
+            {
+                Elements?.Clear();
+            }
+            else if (Children != null)
+            {
+                foreach (var child in Children)
+                {
+                    child.ClearElementsRecursive();
+                }
+            }
+        }
+
+        public TreeNode GetLeafContainingRecursive(Vector3 position)
+        {
+            if (IsLeaf) return this;
+
+            if (Children != null)
+            {
+                foreach (var child in Children)
+                {
+                    if (child.NodeBounds.Contains(position))
+                    {
+                        return child.GetLeafContainingRecursive(position);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public void GetActiveLeavesRecursive(List<TreeNode> resultList)
+        {
+            if (IsLeaf)
+            {
+                if (Elements != null && Elements.Count > 0)
+                {
+                    resultList.Add(this);
+                }
+            }
+            else if (Children != null)
+            {
+                foreach (var child in Children)
+                {
+                    child.GetActiveLeavesRecursive(resultList);
                 }
             }
         }

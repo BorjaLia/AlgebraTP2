@@ -1,9 +1,9 @@
-using System;
 using UnityEngine;
 
 namespace SpatialPartitioning
 {
     [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(Renderer))]
     public class MeshTriangleTreeManager : MonoBehaviour
     {
         [Header("Tree Settings")]
@@ -15,11 +15,37 @@ namespace SpatialPartitioning
         private Vector3[] cachedVertices;
         private int[] cachedTriangles;
         private MeshFilter meshFilter;
+        private Renderer meshRenderer;
 
-        private void Awake() { throw new NotImplementedException(); }
+        private void Awake()
+        {
+            meshFilter = GetComponent<MeshFilter>();
+            meshRenderer = GetComponent<Renderer>();
 
-        public void InitializeTree() { throw new NotImplementedException(); }
+            if (meshFilter == null || meshFilter.sharedMesh == null)
+            {
+                Debug.LogWarning($"MeshTriangleTreeManager on {gameObject.name} requires a MeshFilter with a valid mesh.");
+            }
+        }
 
-        public AABB ConvertWorldBoundsToLocal(AABB worldBounds) { throw new NotImplementedException(); }
+        private void Start()
+        {
+            TreeCollisionManager collisionManager = ServiceLocator.Get<TreeCollisionManager>();
+            if (collisionManager != null) collisionManager.RegisterElement(this);
+        }
+
+        private void OnDestroy()
+        {
+            TreeCollisionManager collisionManager = ServiceLocator.Get<TreeCollisionManager>();
+            if (collisionManager != null) collisionManager.UnRegisterElement(this);
+        }
+
+        public AABB GetWorldAABB()
+        {
+            if (meshRenderer == null) return new AABB();
+
+            Bounds unityBounds = meshRenderer.bounds;
+            return new AABB(unityBounds.center, unityBounds.extents);
+        }
     }
 }

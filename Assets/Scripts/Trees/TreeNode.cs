@@ -114,19 +114,34 @@ namespace SpatialPartitioning
             }
         }
 
-        public void ClearElementsRecursive()
+        public bool ClearElementsRecursive()
         {
             if (IsLeaf)
             {
                 Elements?.Clear();
+                return true;
             }
-            else if (Children != null)
+
+            if (Children != null)
             {
-                foreach (var child in Children)
+                bool allChildrenEmpty = true;
+
+                for (int i = 0; i < Children.Length; i++)
                 {
-                    child.ClearElementsRecursive();
+                    bool isChildEmpty = Children[i].ClearElementsRecursive();
+                    if (!isChildEmpty) allChildrenEmpty = false;
+                }
+
+                if (allChildrenEmpty)
+                {
+                    Children = null;
+                    IsLeaf = true;
+                    if (Elements == null) Elements = new List<ITreeElement>();
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public TreeNode GetLeafContainingRecursive(Vector3 position)

@@ -28,6 +28,7 @@ namespace SpatialPartitioning
         {
             ServiceLocator.Register(this);
         }
+
         private void Start()
         {
             tickAccumulator = (1f / updatesPerSecond);
@@ -79,13 +80,7 @@ namespace SpatialPartitioning
             foreach (var element in ActiveElements)
             {
                 AABB objBounds = element.GetWorldAABB();
-                ITreeElement objElement = new ObjectElement
-                {
-                    TreeManager = element,
-                    Bounds = objBounds,
-                    Center = objBounds.Center
-                };
-                WorldTree.Insert(objElement);
+                WorldTree.Insert(new ObjectElement(element, element.GetWorldAABB()));
             }
 
             WorldTree.PruneEmptyBranches();
@@ -97,7 +92,7 @@ namespace SpatialPartitioning
                 TreeNode leafNode = WorldTree.GetLeafContaining(element.GetWorldAABB().Center);
                 if (leafNode != null)
                 {
-                    SpatialNodeView view = spawner.GetViewForNode(leafNode);
+                    NodeVisualizer view = spawner.GetViewForNode(leafNode);
                     if (view != null) element.transform.SetParent(view.transform, true);
                 }
             }
@@ -110,7 +105,7 @@ namespace SpatialPartitioning
         {
             TreeSpawnerManager spawner = ServiceLocator.Get<TreeSpawnerManager>();
             TreeNode leaf = activeLeaves[currentLeafIndex];
-            SpatialNodeView view = spawner.GetViewForNode(leaf);
+            NodeVisualizer view = spawner.GetViewForNode(leaf);
 
             if (view != null) view.SetUpdating(timePerLeaf);
 
@@ -129,30 +124,26 @@ namespace SpatialPartitioning
         {
             bool hasCollision = false;
             var elements = leaf.Elements;
+            int count = elements.Count;
 
-            for (int i = 0; i < elements.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                for (int j = i + 1; j < elements.Count; j++)
+                var objA = (ObjectElement)elements[i];
+                var elementA = objA.TreeManager;
+                var boundsA = elementA.GetWorldAABB();
+                float radiusA = boundsA.Extents.magnitude * validityRadiusMultiplier;
+
+                for (int j = i + 1; j < count; j++)
                 {
-                    var objA = (ObjectElement)elements[i];
                     var objB = (ObjectElement)elements[j];
-
-                    var elementA = objA.TreeManager;
                     var elementB = objB.TreeManager;
-
-                    var boundsA = elementA.GetWorldAABB();
                     var boundsB = elementB.GetWorldAABB();
-
-                    float distance = Vector3.Distance(boundsA.Center, boundsB.Center);
-                    float radiusA = boundsA.Extents.magnitude * validityRadiusMultiplier;
                     float radiusB = boundsB.Extents.magnitude * validityRadiusMultiplier;
 
-                    if (distance > (radiusA + radiusB)) continue;
-
+                    if (!PassesRadiusCheck(boundsA, radiusA, boundsB, radiusB)) continue;
                     Debug.Log($"<color=yellow>Radius check</color> {elementA.name} and {elementB.name}");
 
-                    if (!boundsA.Intersects(boundsB)) continue;
-
+                    if (!PassesAABBCheck(boundsA, boundsB)) continue;
                     Debug.Log($"<color=orange>AABB check</color> {elementA.name} and {elementB.name}");
 
                     if (CheckTriangleTrees(elementA, elementB))
@@ -163,6 +154,19 @@ namespace SpatialPartitioning
                 }
             }
             return hasCollision;
+        }
+
+        private bool PassesRadiusCheck(AABB boundsA, float radiusA, AABB boundsB, float radiusB)
+        {
+            float sqrDistance = (boundsA.Center - boundsB.Center).sqrMagnitude;
+            float combinedRadius = radiusA + radiusB;
+
+            return sqrDistance <= (combinedRadius * combinedRadius);
+        }
+
+        private bool PassesAABBCheck(AABB boundsA, AABB boundsB)
+        {
+            return boundsA.Intersects(boundsB);
         }
 
         private bool CheckTriangleTrees(MeshTriangleTreeManager objA, MeshTriangleTreeManager objB)
@@ -213,96 +217,76 @@ namespace SpatialPartitioning
 
         private bool EvaluateTriangleOverlap(ITreeElement elementA, ITreeElement elementB, Transform transformA, Transform transformB)
         {
-            if (elementA.Triangles == null || elementB.Triangles == null) return false;
+            var triElementA = elementA as TriangleElement;
+            var triElementB = elementB as TriangleElement;
 
-            foreach (var triA in elementA.Triangles)
-            {
-                Vector3[] worldTriA = new Vector3[] {
-                    transformA.TransformPoint(triA.V0),
-                    transformA.TransformPoint(triA.V1),
-                    transformA.TransformPoint(triA.V2)
-                };
+            if (triElementA == null || triElementB == null) return false;
 
-                foreach (var triB in elementB.Triangles)
-                {
-                    Vector3[] worldTriB = new Vector3[] {
-                        transformB.TransformPoint(triB.V0),
-                        transformB.TransformPoint(triB.V1),
-                        transformB.TransformPoint(triB.V2)
-                    };
+            Triangle triA = triElementA.Triangle;
+            Triangle triB = triElementB.Triangle;
 
-                    if (TrianglesIntersectSAT(worldTriA, worldTriB))
-                    {
-                        return true;
-                    }
-                }
-            }
+            Vector3 a0 = transformA.TransformPoint(triA.V0);
+            Vector3 a1 = transformA.TransformPoint(triA.V1);
+            Vector3 a2 = transformA.TransformPoint(triA.V2);
+
+            Vector3 b0 = transformB.TransformPoint(triB.V0);
+            Vector3 b1 = transformB.TransformPoint(triB.V1);
+            Vector3 b2 = transformB.TransformPoint(triB.V2);
+
+            if (CheckTriangleAgainstPlane(a0, a1, a2, b0, b1, b2)) return true;
+            if (CheckTriangleAgainstPlane(b0, b1, b2, a0, a1, a2)) return true;
+
             return false;
         }
 
-        private bool TrianglesIntersectSAT(Vector3[] triA, Vector3[] triB)
+        private bool CheckTriangleAgainstPlane(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 t0, Vector3 t1, Vector3 t2)
         {
-            Vector3 edgeA0 = triA[1] - triA[0];
-            Vector3 edgeA1 = triA[2] - triA[1];
-            Vector3 edgeA2 = triA[0] - triA[2];
+            Vector3 normal = Vector3.Cross(p1 - p0, p2 - p0).normalized;
 
-            Vector3 edgeB0 = triB[1] - triB[0];
-            Vector3 edgeB1 = triB[2] - triB[1];
-            Vector3 edgeB2 = triB[0] - triB[2];
+            float d0 = Vector3.Dot(normal, t0 - p0);
+            float d1 = Vector3.Dot(normal, t1 - p0);
+            float d2 = Vector3.Dot(normal, t2 - p0);
 
-            Vector3[] axes = new Vector3[11];
+            if ((d0 > 0 && d1 > 0 && d2 > 0) || (d0 < 0 && d1 < 0 && d2 < 0))
+                return false;
 
-            axes[0] = Vector3.Cross(edgeA0, edgeA1);
-            axes[1] = Vector3.Cross(edgeB0, edgeB1);
+            List<Vector3> intersectionPoints = new List<Vector3>();
 
-            axes[2] = Vector3.Cross(edgeA0, edgeB0);
-            axes[3] = Vector3.Cross(edgeA0, edgeB1);
-            axes[4] = Vector3.Cross(edgeA0, edgeB2);
-            axes[5] = Vector3.Cross(edgeA1, edgeB0);
-            axes[6] = Vector3.Cross(edgeA1, edgeB1);
-            axes[7] = Vector3.Cross(edgeA1, edgeB2);
-            axes[8] = Vector3.Cross(edgeA2, edgeB0);
-            axes[9] = Vector3.Cross(edgeA2, edgeB1);
-            axes[10] = Vector3.Cross(edgeA2, edgeB2);
+            if (d0 * d1 < 0) intersectionPoints.Add(Vector3.Lerp(t0, t1, d0 / (d0 - d1)));
+            else if (d0 == 0) intersectionPoints.Add(t0);
 
-            foreach (Vector3 axis in axes)
+            if (d1 * d2 < 0) intersectionPoints.Add(Vector3.Lerp(t1, t2, d1 / (d1 - d2)));
+            else if (d1 == 0) intersectionPoints.Add(t1);
+
+            if (d2 * d0 < 0) intersectionPoints.Add(Vector3.Lerp(t2, t0, d2 / (d2 - d0)));
+            else if (d2 == 0) intersectionPoints.Add(t2);
+
+            float baseArea = GetTriangleArea(p0, p1, p2);
+            foreach (var point in intersectionPoints)
             {
-                if (axis.sqrMagnitude < 0.0001f) continue;
+                float area1 = GetTriangleArea(p0, p1, point);
+                float area2 = GetTriangleArea(p1, p2, point);
+                float area3 = GetTriangleArea(p2, p0, point);
 
-                if (!OverlapOnAxis(triA, triB, axis)) return false;
+                if (Mathf.Abs(baseArea - (area1 + area2 + area3)) <= 0.001f)
+                {
+                    return true;
+                }
             }
 
-            return true;
+            return false;
         }
 
-        private bool OverlapOnAxis(Vector3[] triA, Vector3[] triB, Vector3 axis)
+        private float GetTriangleArea(Vector3 a, Vector3 b, Vector3 c)
         {
-            float minA = float.MaxValue, maxA = float.MinValue;
-
-            for (int i = 0; i < 3; i++)
-            {
-                float projection = Vector3.Dot(triA[i], axis);
-                if (projection < minA) minA = projection;
-                if (projection > maxA) maxA = projection;
-            }
-
-            float minB = float.MaxValue, maxB = float.MinValue;
-
-            for (int i = 0; i < 3; i++)
-            {
-                float projection = Vector3.Dot(triB[i], axis);
-                if (projection < minB) minB = projection;
-                if (projection > maxB) maxB = projection;
-            }
-
-            return maxA >= minB && maxB >= minA;
+            return 0.5f * Vector3.Cross(b - a, c - a).magnitude;
         }
 
         private void ResetAllVisuals(TreeNode node, TreeSpawnerManager spawner)
         {
             if (node == null) return;
 
-            SpatialNodeView view = spawner.GetViewForNode(node);
+            NodeVisualizer view = spawner.GetViewForNode(node);
             if (view != null) view.SetIdle();
 
             if (node.Children != null)

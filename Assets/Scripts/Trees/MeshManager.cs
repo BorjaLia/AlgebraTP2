@@ -51,17 +51,16 @@ namespace SpatialPartitioning
                 Vector3 center = (min + max) / 2f;
                 Vector3 extents = (max - min) / 2f;
 
-                BoxElement triElement = new BoxElement
-                {
-                    Bounds = new AABB(center, extents),
-                    Center = center,
-                    Triangles = new Triangle[] { new Triangle(v0, v1, v2) }
-                };
+                TriangleElement triElement = new TriangleElement(
+                    new Triangle(v0, v1, v2),
+                    new AABB(center, extents)
+                );
+                LocalSpaceTree.Insert(triElement);
 
                 LocalSpaceTree.Insert(triElement);
             }
 
-            Debug.Log($"<color=cyan>Generated Local Tree for {gameObject.name}</color> with {cachedTriangles.Length / 3} triangles.");
+            Debug.Log($"Generated Local Tree for {gameObject.name} with {cachedTriangles.Length / 3} triangles.");
         }
 
         private void Start()

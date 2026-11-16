@@ -11,7 +11,7 @@ namespace SpatialPartitioning
         public int maxTreeDepth = 5;
 
         [Header("Visual Prefabs")]
-        public SpatialNodeView quadrantPrefab;
+        public NodeVisualizer quadrantPrefab;
         public int maxVisualDepth = 3;
 
         [Header("Entities")]
@@ -19,7 +19,7 @@ namespace SpatialPartitioning
         public int spawnAmount = 10;
 
         private Tree macroTree;
-        private Dictionary<TreeNode, SpatialNodeView> nodeViewLookup = new Dictionary<TreeNode, SpatialNodeView>();
+        private Dictionary<TreeNode, NodeVisualizer> nodeViewLookup = new Dictionary<TreeNode, NodeVisualizer>();
         private Transform macroTreeRootTransform;
 
         private void Awake()
@@ -87,13 +87,13 @@ namespace SpatialPartitioning
 
             if (!nodeViewLookup.ContainsKey(logicalNode))
             {
-                SpatialNodeView nodeView = Instantiate(quadrantPrefab, parentTransform);
+                NodeVisualizer nodeView = Instantiate(quadrantPrefab, parentTransform);
                 nodeView.gameObject.name = $"Quadrant_Depth_{currentDepth}";
                 nodeView.Initialize(logicalNode);
                 nodeViewLookup.Add(logicalNode, nodeView);
             }
 
-            SpatialNodeView currentView = nodeViewLookup[logicalNode];
+            NodeVisualizer currentView = nodeViewLookup[logicalNode];
 
             if (logicalNode.IsLeaf && currentView.transform.childCount > 0)
             {
@@ -101,7 +101,7 @@ namespace SpatialPartitioning
                 {
                     Transform child = currentView.transform.GetChild(i);
 
-                    SpatialNodeView childView = child.GetComponent<SpatialNodeView>();
+                    NodeVisualizer childView = child.GetComponent<NodeVisualizer>();
                     if (childView != null)
                     {
                         nodeViewLookup.Remove(childView.LogicalNode);
@@ -125,15 +125,15 @@ namespace SpatialPartitioning
                 TreeNode leafNode = macroTree.GetLeafContaining(element.GetWorldAABB().Center);
                 if (leafNode != null)
                 {
-                    SpatialNodeView view = GetViewForNode(leafNode);
+                    NodeVisualizer view = GetViewForNode(leafNode);
                     if (view != null) element.transform.SetParent(view.transform,true);
                 }
             }
         }
 
-        public SpatialNodeView GetViewForNode(TreeNode node)
+        public NodeVisualizer GetViewForNode(TreeNode node)
         {
-            nodeViewLookup.TryGetValue(node, out SpatialNodeView view);
+            nodeViewLookup.TryGetValue(node, out NodeVisualizer view);
             return view;
         }
     }

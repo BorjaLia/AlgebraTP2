@@ -61,8 +61,7 @@ namespace SpatialPartitioning
 
         public bool Insert(ITreeElement element)
         {
-            if (!NodeBounds.Intersects(element.Bounds))
-                return false;
+            if (!NodeBounds.Intersects(element.Bounds)) return false;
 
             if (IsLeaf)
             {

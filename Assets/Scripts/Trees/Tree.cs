@@ -20,6 +20,7 @@ namespace SpatialPartitioning
             IsQuadtree = (bounds.Extents.x == 0 || bounds.Extents.y == 0 || bounds.Extents.z == 0);
             RootNode = new TreeNode(bounds, 0, MaxElementsPerNode, MaxDepth);
         }
+
         public bool Insert(ITreeElement element)
         {
             if (RootNode == null)

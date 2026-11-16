@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SpatialPartitioning
 {
-    public class SpatialNodeView : MonoBehaviour
+    public class NodeVisualizer : MonoBehaviour
     {
         [Header("Visual States")]
         [SerializeField] private MeshRenderer meshRenderer;
@@ -11,6 +11,9 @@ namespace SpatialPartitioning
         [SerializeField] private Material collidingMaterial;
 
         [SerializeField] private float defaultHighlightDuration = 0.5f;
+
+        [SerializeField] private float minVisualThickness = 0.1f;
+
         public TreeNode LogicalNode { get; private set; }
 
         private float highlightTimer = 0f;
@@ -27,7 +30,14 @@ namespace SpatialPartitioning
             transform.SetParent(null);
 
             transform.position = logicalNode.NodeBounds.Center;
-            transform.localScale = logicalNode.NodeBounds.Extents * 2f;
+
+            Vector3 logicalScale = logicalNode.NodeBounds.Extents * 2f;
+
+            transform.localScale = new Vector3(
+                Mathf.Max(logicalScale.x, minVisualThickness),
+                Mathf.Max(logicalScale.y, minVisualThickness),
+                Mathf.Max(logicalScale.z, minVisualThickness)
+            );
 
             transform.SetParent(currentParent, true);
         }

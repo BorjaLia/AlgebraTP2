@@ -47,21 +47,31 @@ namespace SpatialPartitioning
     {
         AABB Bounds { get; }
         Vector3 Center { get; }
-        Triangle[] Triangles { get; }
     }
 
-    public class BoxElement : ITreeElement
+    public class TriangleElement : ITreeElement
     {
         public AABB Bounds { get; set; }
-        public Vector3 Center { get; set; }
-        public Triangle[] Triangles { get; set; }
+        public Vector3 Center => Bounds.Center;
+        public Triangle Triangle { get; set; }
+
+        public TriangleElement(Triangle triangle, AABB bounds)
+        {
+            Triangle = triangle;
+            Bounds = bounds;
+        }
     }
 
     public class ObjectElement : ITreeElement
     {
         public AABB Bounds { get; set; }
-        public Vector3 Center { get; set; }
-        public Triangle[] Triangles { get; set; }
+        public Vector3 Center => Bounds.Center;
         public MeshTriangleTreeManager TreeManager { get; set; }
+
+        public ObjectElement(MeshTriangleTreeManager manager, AABB bounds)
+        {
+            TreeManager = manager;
+            Bounds = bounds;
+        }
     }
 }

@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpatialPartitioning.TreeCollisionManager
   updatesPerSecond: 0.25
+  validityRadiusMultiplier: 2
 --- !u!114 &163783084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,10 +182,11 @@ MonoBehaviour:
   maxElementsPerNode: 2
   maxTreeDepth: 8
   quadrantPrefab: {fileID: 4002452726532708465, guid: 6d819d20fc788e84cb072d50113c4f1d, type: 3}
-  maxVisualDepth: 3
+  maxVisualDepth: 6
   objectPrefabs:
   - {fileID: 3143428604090576650, guid: 469e67e0f88378d4680badbd39ee72de, type: 3}
-  spawnAmount: 15
+  - {fileID: 3143428604090576650, guid: 6f120512dc90d864bab7f7b7937a1a80, type: 3}
+  spawnAmount: 17
 --- !u!1 &568335957
 GameObject:
   m_ObjectHideFlags: 0

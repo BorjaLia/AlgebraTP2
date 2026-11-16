@@ -76,9 +76,15 @@ namespace SpatialPartitioning
                 }
             }
         }
+
         public void ClearElements()
         {
             if (RootNode != null) RootNode.ClearElementsRecursive();
+        }
+
+        public void PruneEmptyBranches()
+        {
+            if (RootNode != null) RootNode.PruneEmptyBranches();
         }
 
         public TreeNode GetLeafContaining(Vector3 position)

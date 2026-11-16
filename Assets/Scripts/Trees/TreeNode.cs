@@ -114,21 +114,34 @@ namespace SpatialPartitioning
             }
         }
 
-        public bool ClearElementsRecursive()
+        public void ClearElementsRecursive()
         {
             if (IsLeaf)
             {
                 Elements?.Clear();
-                return true;
             }
-
-            if (Children != null)
+            else if (Children != null)
             {
-                bool allChildrenEmpty = true;
-
                 for (int i = 0; i < Children.Length; i++)
                 {
-                    bool isChildEmpty = Children[i].ClearElementsRecursive();
+                    Children[i].ClearElementsRecursive();
+                }
+            }
+        }
+
+        public bool PruneEmptyBranches()
+        {
+            if (IsLeaf)
+            {
+                return Elements == null || Elements.Count == 0;
+            }
+
+            bool allChildrenEmpty = true;
+            if (Children != null)
+            {
+                for (int i = 0; i < Children.Length; i++)
+                {
+                    bool isChildEmpty = Children[i].PruneEmptyBranches();
                     if (!isChildEmpty) allChildrenEmpty = false;
                 }
 
@@ -140,7 +153,6 @@ namespace SpatialPartitioning
                     return true;
                 }
             }
-
             return false;
         }
 

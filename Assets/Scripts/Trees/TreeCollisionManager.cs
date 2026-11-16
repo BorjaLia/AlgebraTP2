@@ -62,6 +62,8 @@ namespace SpatialPartitioning
                 WorldTree.Insert(objElement);
             }
 
+            WorldTree.PruneEmptyBranches();
+
             spawner.SyncVisualTree();
 
             foreach (var element in ActiveElements)
@@ -82,6 +84,8 @@ namespace SpatialPartitioning
             foreach (var leaf in activeLeaves)
             {
                 SpatialNodeView view = spawner.GetViewForNode(leaf);
+
+                if (view != null) view.SetUpdating();
 
                 bool collisionFound = ProcessLeafCollisions(leaf);
 

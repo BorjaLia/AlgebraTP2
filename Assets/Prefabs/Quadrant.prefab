@@ -107,3 +107,4 @@ MonoBehaviour:
   idleMaterial: {fileID: 2100000, guid: 399d08b8de8e3d947a7d94ddd6580079, type: 2}
   updatingMaterial: {fileID: 2100000, guid: 4e943ef145ad765408e055a9b07fab5b, type: 2}
   collidingMaterial: {fileID: 2100000, guid: 8881f82ce40984544831c6902f3ba40a, type: 2}
+  highlightDuration: 0.5

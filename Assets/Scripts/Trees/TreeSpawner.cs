@@ -93,12 +93,27 @@ namespace SpatialPartitioning
                 nodeViewLookup.Add(logicalNode, nodeView);
             }
 
-            if (!logicalNode.IsLeaf && logicalNode.Children != null)
+            SpatialNodeView currentView = nodeViewLookup[logicalNode];
+
+            if (logicalNode.IsLeaf && currentView.transform.childCount > 0)
             {
-                Transform currentViewTransform = nodeViewLookup[logicalNode].transform;
+                for (int i = currentView.transform.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = currentView.transform.GetChild(i);
+
+                    SpatialNodeView childView = child.GetComponent<SpatialNodeView>();
+                    if (childView != null)
+                    {
+                        nodeViewLookup.Remove(childView.LogicalNode);
+                        Destroy(child.gameObject);
+                    }
+                }
+            }
+            else if (!logicalNode.IsLeaf && logicalNode.Children != null)
+            {
                 foreach (var childNode in logicalNode.Children)
                 {
-                    EnsureVisuals(childNode, currentViewTransform, currentDepth + 1);
+                    EnsureVisuals(childNode, currentView.transform, currentDepth + 1);
                 }
             }
         }

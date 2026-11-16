@@ -16,7 +16,8 @@ namespace SpatialPartitioning
         public Color microTreeColor = new Color(0, 1, 0, 0.1f);
 
         public bool drawTriangles = true;
-        public Color triangleColor = new Color(1, 0, 1, 0.1f);
+        public Color idleTriangleColor = new Color(1, 0, 1, 0.1f);
+        public Color collidingTriangleColor = new Color(1, 0, 0, 0.1f);
 
         private void Awake()
         {
@@ -73,11 +74,19 @@ namespace SpatialPartitioning
 
             if (node.IsLeaf && node.Elements != null && drawTriangles)
             {
-                Gizmos.color = triangleColor;
                 foreach (var element in node.Elements)
                 {
                     if (element is TriangleElement triElement)
                     {
+                        if (treeManager.CollidingMicroElements.Contains(triElement))
+                        {
+                            Gizmos.color = collidingTriangleColor;
+                        }
+                        else
+                        {
+                            Gizmos.color = idleTriangleColor;
+                        }
+
                         Gizmos.DrawLine(triElement.Triangle.V0, triElement.Triangle.V1);
                         Gizmos.DrawLine(triElement.Triangle.V1, triElement.Triangle.V2);
                         Gizmos.DrawLine(triElement.Triangle.V2, triElement.Triangle.V0);

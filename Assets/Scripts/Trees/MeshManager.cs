@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SpatialPartitioning
@@ -16,6 +17,13 @@ namespace SpatialPartitioning
         private int[] cachedTriangles;
         private MeshFilter meshFilter;
         private Renderer meshRenderer;
+
+        public HashSet<ITreeElement> CollidingMicroElements { get; private set; } = new HashSet<ITreeElement>();
+
+        public void ClearCollisionState()
+        {
+            CollidingMicroElements.Clear();
+        }
 
         private void Awake()
         {

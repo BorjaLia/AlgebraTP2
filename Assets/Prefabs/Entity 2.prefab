@@ -145,4 +145,5 @@ MonoBehaviour:
   drawMicroTreeBounds: 1
   microTreeColor: {r: 0, g: 1, b: 0, a: 0.019607844}
   drawTriangles: 1
-  triangleColor: {r: 1, g: 0, b: 1, a: 0.019607844}
+  idleTriangleColor: {r: 0.84705883, g: 1, b: 0, a: 0.1}
+  collidingTriangleColor: {r: 1, g: 0, b: 0, a: 0.1}

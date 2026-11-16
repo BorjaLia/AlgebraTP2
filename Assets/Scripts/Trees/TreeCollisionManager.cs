@@ -72,6 +72,11 @@ namespace SpatialPartitioning
 
         private void BeginNewTickCycle()
         {
+            foreach (var element in ActiveElements)
+            {
+                element.ClearCollisionState();
+            }
+
             TreeSpawnerManager spawner = ServiceLocator.Get<TreeSpawnerManager>();
 
             WorldTree.ClearElements();
@@ -201,18 +206,23 @@ namespace SpatialPartitioning
                 }
             }
 
+            bool hasCollision = false;
+
             foreach (var elementA in uniqueElementsBufferA)
             {
                 foreach (var elementB in uniqueElementsBufferB)
                 {
                     if (EvaluateTriangleOverlap(elementA, elementB, objA.transform, objB.transform))
                     {
-                        return true;
+                        objA.CollidingMicroElements.Add(elementA);
+                        objB.CollidingMicroElements.Add(elementB);
+
+                        hasCollision = true;
                     }
                 }
             }
 
-            return false;
+            return hasCollision;
         }
 
         private bool EvaluateTriangleOverlap(ITreeElement elementA, ITreeElement elementB, Transform transformA, Transform transformB)

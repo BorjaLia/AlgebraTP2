@@ -8,6 +8,9 @@ namespace SpatialPartitioning
         [Header("Tick Settings")]
         public float updatesPerSecond = 2f;
 
+        [Header("Collision Settings")]
+        public float validityRadiusMultiplier = 2f;
+
         public Tree WorldTree { get; set; }
 
         public List<MeshTriangleTreeManager> ActiveElements { get; private set; } = new List<MeshTriangleTreeManager>();
@@ -133,8 +136,9 @@ namespace SpatialPartitioning
                     var boundsB = elementB.GetWorldAABB();
 
                     float distance = Vector3.Distance(boundsA.Center, boundsB.Center);
-                    float radiusA = boundsA.Extents.magnitude;
-                    float radiusB = boundsB.Extents.magnitude;
+
+                    float radiusA = boundsA.Extents.magnitude * validityRadiusMultiplier;
+                    float radiusB = boundsB.Extents.magnitude * validityRadiusMultiplier;
 
                     if (distance > (radiusA + radiusB)) continue;
 

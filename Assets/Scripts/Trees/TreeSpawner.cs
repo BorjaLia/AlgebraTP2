@@ -68,7 +68,7 @@ namespace SpatialPartitioning
                     collisionManager.RegisterElement(treeManager);
 
                     AABB objBounds = treeManager.GetWorldAABB();
-                    macroTree.Insert(new ObjectElement { TreeManager = treeManager, Bounds = objBounds, Center = objBounds.Center });
+                    macroTree.Insert(new ObjectElement(treeManager,objBounds));
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace SpatialPartitioning
         [SerializeField] private Material updatingMaterial;
         [SerializeField] private Material collidingMaterial;
 
-        [SerializeField] private float highlightDuration = 0.15f;
+        [SerializeField] private float defaultHighlightDuration = 0.5f;
         public TreeNode LogicalNode { get; private set; }
 
         private float highlightTimer = 0f;
@@ -57,10 +57,10 @@ namespace SpatialPartitioning
             else meshRenderer.material = collidingMaterial;
         }
 
-        public void SetUpdating()
+        public void SetUpdating(float customDuration = -1f)
         {
             meshRenderer.material = updatingMaterial;
-            highlightTimer = highlightDuration;
+            highlightTimer = customDuration > 0f ? customDuration : defaultHighlightDuration;
             pendingMaterial = null;
         }
     }

@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04c09d8b83836944baf989a8f609c102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpatialPartitioning.TreeCollisionManager
-  updatesPerSecond: 1
+  updatesPerSecond: 0.25
 --- !u!114 &163783084
 MonoBehaviour:
   m_ObjectHideFlags: 0

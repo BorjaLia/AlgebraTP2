@@ -12,7 +12,10 @@ namespace SpatialPartitioning
 
         public List<MeshTriangleTreeManager> ActiveElements { get; private set; } = new List<MeshTriangleTreeManager>();
 
-        private float accumulator = 0f;
+        private float tickAccumulator = 0f;
+
+        private List<TreeNode> activeLeaves = new List<TreeNode>();
+        private int currentLeafIndex = 0;
 
         private void Awake()
         {
@@ -33,17 +36,29 @@ namespace SpatialPartitioning
         {
             if (updatesPerSecond <= 0f || WorldTree == null) return;
 
-            accumulator += Time.deltaTime;
-            float timePerTick = 1f / updatesPerSecond;
+            tickAccumulator += Time.deltaTime;
+            float cycleDuration = 1f / updatesPerSecond;
 
-            if (accumulator >= timePerTick)
+            float timePerStep = (activeLeaves.Count > 0) ? (cycleDuration / activeLeaves.Count) : cycleDuration;
+
+            if (tickAccumulator >= timePerStep)
             {
-                accumulator -= timePerTick;
-                ExecuteCollisionPass();
+                tickAccumulator -= timePerStep;
+
+                if (activeLeaves.Count == 0 || currentLeafIndex >= activeLeaves.Count)
+                {
+                    BeginNewTickCycle();
+                }
+
+                if (activeLeaves.Count > 0)
+                {
+                    float trueTimePerLeaf = cycleDuration / activeLeaves.Count;
+                    ProcessNextLeaf(trueTimePerLeaf);
+                }
             }
         }
 
-        private void ExecuteCollisionPass()
+        private void BeginNewTickCycle()
         {
             TreeSpawnerManager spawner = ServiceLocator.Get<TreeSpawnerManager>();
 
@@ -72,29 +87,31 @@ namespace SpatialPartitioning
                 if (leafNode != null)
                 {
                     SpatialNodeView view = spawner.GetViewForNode(leafNode);
-                    if (view != null)
-                    {
-                        element.transform.SetParent(view.transform, true);
-                    }
+                    if (view != null) element.transform.SetParent(view.transform, true);
                 }
             }
 
-            List<TreeNode> activeLeaves = WorldTree.GetActiveLeaves();
+            activeLeaves = WorldTree.GetActiveLeaves();
+            currentLeafIndex = 0;
+        }
 
-            foreach (var leaf in activeLeaves)
+        private void ProcessNextLeaf(float timePerLeaf)
+        {
+            TreeSpawnerManager spawner = ServiceLocator.Get<TreeSpawnerManager>();
+            TreeNode leaf = activeLeaves[currentLeafIndex];
+            SpatialNodeView view = spawner.GetViewForNode(leaf);
+
+            if (view != null) view.SetUpdating(timePerLeaf);
+
+            bool collisionFound = ProcessLeafCollisions(leaf);
+
+            if (view != null)
             {
-                SpatialNodeView view = spawner.GetViewForNode(leaf);
-
-                if (view != null) view.SetUpdating();
-
-                bool collisionFound = ProcessLeafCollisions(leaf);
-
-                if (view != null)
-                {
-                    if (collisionFound) view.SetColliding();
-                    else view.SetIdle();
-                }
+                if (collisionFound) view.SetColliding();
+                else view.SetIdle();
             }
+
+            currentLeafIndex++;
         }
 
         private bool ProcessLeafCollisions(TreeNode leaf)
@@ -125,7 +142,7 @@ namespace SpatialPartitioning
 
                     if (CheckTriangleTrees(elementA, elementB))
                     {
-                        Debug.Log($"Collision Detected: {elementA.name} and {elementB.name}");
+                        Debug.Log($"<color=red>Collision Detected:</color> {elementA.name} and {elementB.name}");
                         hasCollision = true;
                     }
                 }
